@@ -15,20 +15,16 @@ void timer_init () {
 
 ISR(TCA0_OVF_vect)
 {
-  uart_transmit('H');
-  uart_transmit('I');
-  uart_transmit(10);
-  uart_transmit(13);
 
   TCA0_SINGLE_INTFLAGS = TCA_SINGLE_OVF_bm;
 }
 
 int main () {
-  uart_init();
-  timer_init();
-  sei();
+  //// Timer Initialization
+  //timer_init();
+  //sei();
 
-  uart_transmit('S');
+  output_data();
 
   while(1);
 }
