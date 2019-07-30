@@ -1,0 +1,6 @@
+*.h
+*.o
+*.elf
+Makefile
+avr/
+jtag2updi/
