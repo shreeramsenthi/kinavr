@@ -24,8 +24,7 @@ ISR(TCA0_OVF_vect)
 }
 
 int main () {
+  uart_init();
   timer_init();
   sei();
-
-  while(1);
 }
