@@ -27,4 +27,8 @@ int main () {
   uart_init();
   timer_init();
   sei();
+
+  uart_transmit('S');
+
+  while(1);
 }
