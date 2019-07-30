@@ -5,7 +5,7 @@ const int SS_SEN0 = PIN0_bm; // PORT C
 const int SS_SEN1 = PIN1_bm; // PORT C
 const int SS_SEN2 = PIN2_bm; // PORT C
 const int SS_SEN3 = PIN3_bm; // PORT C
-const int SS_SEN = SS_SEN0 | SS_SEN1 | SS_SEN2 | SS_SEN3; // PORT C
+const int SS_SEN = PIN0_bm | PIN1_bm | PIN2_bm | PIN3_bm; // PORT C
 
 /*------------------------------------------*/
 /*               Low Level                  */
