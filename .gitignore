@@ -4,3 +4,7 @@
 Makefile
 avr/
 jtag2updi/
+.vs/
+*.xml
+*.cproj
+*.atsln
