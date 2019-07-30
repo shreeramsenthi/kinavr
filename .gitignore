@@ -8,3 +8,4 @@ jtag2updi/
 *.xml
 *.cproj
 *.atsln
+Debug/
