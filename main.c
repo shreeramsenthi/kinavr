@@ -7,22 +7,14 @@
 #include "modes/dc.c"
 #include "modes/do.c"
 
-const int DO_BTN = PIN5_bm; // PORT A
-const int DC_BTN = PIN6_bm; // PORT A
-
-ISR (PORTA_PORT_vect) {
-  uart_print_byte_hex(PORTA_INTFLAGS);
-  PORTA_PIN5CTRL = 0;
-  PORTA_PIN6CTRL = 0;
-  PORTA_INTFLAGS |= DO_BTN | DC_BTN;
-}
+const int DC_BTN = PIN5_bm; // PORT A
+const int DO_BTN = PIN6_bm; // PORT A
 
 int main () {
   // Mode button setup
   PORTA_DIRCLR = DO_BTN | DC_BTN;
-  PORTA_PIN5CTRL = PORT_PULLUPEN_bm | PORT_ISC_FALLING_gc;
-  PORTA_PIN6CTRL = PORT_PULLUPEN_bm | PORT_ISC_FALLING_gc;
-  sei();
+  PORTA_PIN5CTRL = PORT_PULLUPEN_bm;
+  PORTA_PIN6CTRL = PORT_PULLUPEN_bm;
 
   // Testing
   uart_init();
@@ -30,8 +22,14 @@ int main () {
   uart_transmit(10);
   uart_transmit(13);
 
-  //output_data();
-  //collect_data();
-
-  while(1);
+  while(1){
+    if (~PORTA_IN & DC_BTN) { // Button press grounds the pin, pull-up resistor is enabled otherwise
+      uart_transmit('C');
+      //collect_data();
+    }
+    if (~PORTA_IN & DO_BTN) {
+      uart_transmit('O');
+      //output_data();
+    }
+  }
 }
