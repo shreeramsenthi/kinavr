@@ -21,7 +21,10 @@ void spi_init() {
   PORTC_DIRSET = SS_SEN;
   PORTC_OUTSET = SS_SEN;
 
-  SPI0_CTRLA = SPI_MASTER_bm | SPI_CLK2X_bm | SPI_ENABLE_bm; // Enable SPI in fast master mode
+  SPI0_CTRLB = 3; // SPI MODE 3
+  SPI0_CTRLA = SPI_MASTER_bm |
+               SPI_CLK2X_bm |
+               SPI_ENABLE_bm; // Enable SPI in fast master mode
 }
 
 unsigned char spi_transfer (unsigned char data) {
@@ -31,7 +34,7 @@ unsigned char spi_transfer (unsigned char data) {
 }
 
 /*------------------------------------------*/
-/*             SPI Functions                */
+/*            Flash Functions               */
 /*------------------------------------------*/
 
 void flash_send_address (unsigned int addr) { //Sends 3 byte addresses over SPI
@@ -64,7 +67,16 @@ void flash_start_read (unsigned int addr) {
   flash_send_address(addr);
 }
 
-void flash_end_read () {
+void flash_start_write (unsigned int addr){
+  flash_wait_for_ready();
+  flash_write_enable();
+
+  PORTB_OUTCLR = SS_MEM; // Set SS low
+  spi_transfer(0x02); // Write command
+  flash_send_address(addr);
+}
+
+void flash_end_rw () {
   PORTB_OUTSET = SS_MEM;   // Set SS high
 }
 
@@ -77,15 +89,6 @@ void flash_write_single (unsigned int addr, unsigned char data){
   flash_send_address(addr);
   spi_transfer(data);
   PORTB_OUTSET = SS_MEM; // End Write
-}
-
-void flash_write_sample (unsigned int addr){
-  flash_wait_for_ready();
-  flash_write_enable();
-
-  PORTB_OUTCLR = SS_MEM; // Set SS low
-  spi_transfer(0x02); // Write command
-  flash_send_address(addr);
 }
 
 void flash_block_erase (unsigned int addr){

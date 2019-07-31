@@ -43,5 +43,5 @@ void output_data () {
   }
 
   // End read command
-  flash_end_read();
+  flash_end_rw();
 }
