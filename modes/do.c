@@ -12,14 +12,14 @@ void output_data () {
   flash_start_read(addr);
 
   // Indicate start of print
-  uart_transmit(10); // For new lines on live view, comment out for saving
+  //uart_transmit(10); // For new lines on live view, comment out for saving
   uart_transmit(13); // New line
   uart_transmit(83); // S
   uart_transmit(84); // T
   uart_transmit(65); // A
   uart_transmit(82); // R
   uart_transmit(84); // T
-  uart_transmit(10); // For live view only
+  //uart_transmit(10); // For live view only
   uart_transmit(13); // New line
 
   while(addr <= max_addr) { // Repeat until all addresses output
@@ -29,7 +29,7 @@ void output_data () {
 
     // Drop line every 18 bytes, or one sample
     if((addr % 0xFF) % 18 == 0) {
-      uart_transmit(10); // for live view only
+      //uart_transmit(10); // for live view only
       uart_transmit(13);
     }
     if((addr % 0xFF) % 0xFC == 0){ // skip last 4 bytes of each page
