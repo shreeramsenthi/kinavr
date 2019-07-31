@@ -1,3 +1,5 @@
+#define F_CPU 3333333UL
+
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <util/delay.h>
