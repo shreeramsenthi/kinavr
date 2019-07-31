@@ -1,11 +1,12 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
+#include <util/delay.h>
 
 #include "com/uart.c"
 #include "com/spi.c"
 
-#include "modes/dc.c"
 #include "modes/do.c"
+#include "modes/dc.c"
 
 const int DC_BTN = PIN5_bm; // PORT A
 const int DO_BTN = PIN6_bm; // PORT A

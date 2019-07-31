@@ -12,7 +12,7 @@ void timer_init () {
 
 ISR(TCA0_OVF_vect)
 {
-
+  sensor_sample(SS_SEN0);  
   TCA0_SINGLE_INTFLAGS = TCA_SINGLE_OVF_bm;
 }
 
@@ -21,7 +21,10 @@ ISR(TCA0_OVF_vect)
 /*------------------------------------------*/
 
 void collect_data() {
-  // Timer Initialization
+  uart_init(); // testing
+  spi_init();
+  sensor_init(SS_SEN0);
+
   timer_init();
 
   while(1);

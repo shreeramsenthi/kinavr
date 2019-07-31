@@ -1,3 +1,5 @@
+#include "mpu9250.h"
+
 const uint8_t MOSI = PIN1_bm; // PORT A
 const uint8_t SCK = PIN3_bm; // PORT A
 const uint8_t SS_MEM = PIN0_bm; // PORT B
@@ -108,4 +110,104 @@ void flash_chip_erase (){
   PORTB_OUTCLR = SS_MEM; // Set SS low
   spi_transfer(0xC7); // Chip Erase command
   PORTB_OUTSET = SS_MEM; // End Write
+}
+
+/*------------------------------------------*/
+/*            Sensor Functions              */
+/*------------------------------------------*/
+
+uint8_t mpu_reg_transfer (uint8_t SS, uint8_t reg, uint8_t val) {
+  PORTC_OUTCLR = SS;
+  spi_transfer(reg);
+  uint8_t data = spi_transfer(val);
+  PORTC_OUTSET = SS;
+  return(data);
+}
+
+void mpu_write_register (uint8_t SS, uint8_t addr, uint8_t data) {
+  mpu_reg_transfer(SS, addr, data);
+  _delay_ms(10);
+}
+
+void mpu_start_read (uint8_t SS, uint8_t addr) {
+  PORTC_OUTCLR = SS;
+  spi_transfer(addr | 0x80); // Strip bank info, add read flag
+}
+
+void mpu_end_read (uint8_t SS) {
+  PORTC_OUTSET = SS;
+}
+
+void mag_write_reg (uint8_t SS, uint8_t reg, uint8_t data) {
+  mpu_write_register(SS, MPU9250_I2C_SLV0_ADDR, 0x0C); // Set i2c Address to write
+  mpu_write_register(SS, MPU9250_I2C_SLV0_REG, reg); // Set register address
+  mpu_write_register(SS, MPU9250_I2C_SLV0_DO, data); // Set value to write
+}
+
+void mag_start_read (uint8_t SS, uint8_t reg) {
+  mpu_write_register(SS, MPU9250_I2C_SLV0_ADDR, 0x0C | 0x80); // Set i2c Address to read
+  mpu_write_register(SS, MPU9250_I2C_SLV0_REG, reg); // Set register address
+  mpu_write_register(SS, MPU9250_I2C_SLV0_DO, 0xFF); // Set value to write
+}
+
+void sensor_init (uint8_t SS) {
+  // Reset Sensor
+  mpu_write_register(SS, MPU9250_PWR_MGMT_1, MPU9250_BIT_H_RESET);
+  _delay_ms(100);
+  mpu_write_register(SS, MPU9250_USER_CTRL, MPU9250_BIT_I2C_IF_DIS); // SPI mode
+  mpu_write_register(SS, MPU9250_PWR_MGMT_1, 0x00); // Clear sleep mode
+  mpu_write_register(SS, MPU9250_PWR_MGMT_2, 0x00); // Ensure Accel + Gyro are enabled
+
+  // Set Accel/Gyro resolution and LP Filter
+  mpu_write_register(SS, MPU9250_ACCEL_CONFIG, 0x00); // 2G scale
+  mpu_write_register(SS, MPU9250_GYRO_CONFIG, 0x00); // Enable LP filter and 250 scale (may be disabling LP filter, unclear)
+
+  // Set up I2C Master
+  mpu_write_register(SS, MPU9250_INT_PIN_CFG, 0x20); // Disable bypass and latch INT pin
+  mpu_write_register(SS, MPU9250_I2C_MST_CTRL, 0x0D); // set I2C master clock at 400kHz
+  mpu_write_register(SS, MPU9250_I2C_MST_DELAY_CTRL, 0x01); // Set magnetometer delay
+  mpu_write_register(SS, MPU9250_USER_CTRL, MPU9250_BIT_I2C_IF_DIS | MPU9250_BIT_I2C_MST_EN); // Enable I2C master mode
+
+  // Reset Mag
+  mag_write_reg(SS, REG_AK8963_CNTL2, BIT_AK8963_CNTL2_SRST); // Reset magnetometer
+  mpu_write_register(SS, MPU9250_I2C_SLV0_CTRL, 0x80); // Enable SLV0 and no read
+  _delay_ms(100);
+  mag_write_reg(SS, REG_AK8963_CNTL1, 0b0110); // Continous mode, 100Hz
+  mpu_write_register(SS, MPU9250_I2C_SLV0_CTRL, 0x80); // Enable SLV0 and no read
+
+  // Prep mag for reading
+  mpu_write_register(SS, MPU9250_I2C_SLV0_CTRL, 0x87); // Enable SLV0 and 7 bytes of read
+  mag_start_read(SS, 0x03); // data register on the mag
+}
+
+void sensor_sample (uint8_t SS) {
+  mpu_start_read(SS, MPU9250_ACCEL_XOUT_H);
+
+  uart_print_byte_hex(spi_transfer(0x00)); // ACC X
+  uart_print_byte_hex(spi_transfer(0x00)); // ACC X
+  uart_print_byte_hex(spi_transfer(0x00)); // ACC Y
+  uart_print_byte_hex(spi_transfer(0x00)); // ACC Y
+  uart_print_byte_hex(spi_transfer(0x00)); // ACC Z
+  uart_print_byte_hex(spi_transfer(0x00)); // ACC Z
+
+  uart_print_byte_hex(spi_transfer(0x00)); // TEMP
+  uart_print_byte_hex(spi_transfer(0x00)); // TEMP
+
+  uart_print_byte_hex(spi_transfer(0x00)); // GYR X
+  uart_print_byte_hex(spi_transfer(0x00)); // GYR X
+  uart_print_byte_hex(spi_transfer(0x00)); // GYR Y
+  uart_print_byte_hex(spi_transfer(0x00)); // GYR Y
+  uart_print_byte_hex(spi_transfer(0x00)); // GYR Z
+  uart_print_byte_hex(spi_transfer(0x00)); // GYR Z
+
+  uart_print_byte_hex(spi_transfer(0x00)); // MAG X
+  uart_print_byte_hex(spi_transfer(0x00)); // MAG X
+  uart_print_byte_hex(spi_transfer(0x00)); // MAG Y
+  uart_print_byte_hex(spi_transfer(0x00)); // MAG Y
+  uart_print_byte_hex(spi_transfer(0x00)); // MAG Z
+  uart_print_byte_hex(spi_transfer(0x00)); // MAG Z
+
+  mpu_end_read(SS);
+  uart_transmit(13); // Drop line
+  uart_transmit(10); // Drop line
 }
