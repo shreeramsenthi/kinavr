@@ -1,11 +1,11 @@
-const int MOSI = PIN1_bm; // PORT A
-const int SCK = PIN3_bm; // PORT A
-const int SS_MEM = PIN0_bm; // PORT B
-const int SS_SEN0 = PIN0_bm; // PORT C
-const int SS_SEN1 = PIN1_bm; // PORT C
-const int SS_SEN2 = PIN2_bm; // PORT C
-const int SS_SEN3 = PIN3_bm; // PORT C
-const int SS_SEN = PIN0_bm | PIN1_bm | PIN2_bm | PIN3_bm; // PORT C
+const uint8_t MOSI = PIN1_bm; // PORT A
+const uint8_t SCK = PIN3_bm; // PORT A
+const uint8_t SS_MEM = PIN0_bm; // PORT B
+const uint8_t SS_SEN0 = PIN0_bm; // PORT C
+const uint8_t SS_SEN1 = PIN1_bm; // PORT C
+const uint8_t SS_SEN2 = PIN2_bm; // PORT C
+const uint8_t SS_SEN3 = PIN3_bm; // PORT C
+const uint8_t SS_SEN = PIN0_bm | PIN1_bm | PIN2_bm | PIN3_bm; // PORT C
 
 /*------------------------------------------*/
 /*               Low Level                  */
