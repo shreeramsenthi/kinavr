@@ -180,34 +180,22 @@ void sensor_init (uint8_t SS) {
   mag_start_read(SS, 0x03); // data register on the mag
 }
 
-void sensor_sample (uint8_t SS) {
+void sensor_sample (uint8_t SS, uint32_t addr) {
+  uint8_t sample[18];
+
+  // Read in data from sensor
   mpu_start_read(SS, MPU9250_ACCEL_XOUT_H);
-
-  uart_print_byte_hex(spi_transfer(0x00)); // ACC X
-  uart_print_byte_hex(spi_transfer(0x00)); // ACC X
-  uart_print_byte_hex(spi_transfer(0x00)); // ACC Y
-  uart_print_byte_hex(spi_transfer(0x00)); // ACC Y
-  uart_print_byte_hex(spi_transfer(0x00)); // ACC Z
-  uart_print_byte_hex(spi_transfer(0x00)); // ACC Z
-
-  uart_print_byte_hex(spi_transfer(0x00)); // TEMP
-  uart_print_byte_hex(spi_transfer(0x00)); // TEMP
-
-  uart_print_byte_hex(spi_transfer(0x00)); // GYR X
-  uart_print_byte_hex(spi_transfer(0x00)); // GYR X
-  uart_print_byte_hex(spi_transfer(0x00)); // GYR Y
-  uart_print_byte_hex(spi_transfer(0x00)); // GYR Y
-  uart_print_byte_hex(spi_transfer(0x00)); // GYR Z
-  uart_print_byte_hex(spi_transfer(0x00)); // GYR Z
-
-  uart_print_byte_hex(spi_transfer(0x00)); // MAG X
-  uart_print_byte_hex(spi_transfer(0x00)); // MAG X
-  uart_print_byte_hex(spi_transfer(0x00)); // MAG Y
-  uart_print_byte_hex(spi_transfer(0x00)); // MAG Y
-  uart_print_byte_hex(spi_transfer(0x00)); // MAG Z
-  uart_print_byte_hex(spi_transfer(0x00)); // MAG Z
-
+  for (int i = 0; i < 6; i++)
+    sample[i] = spi_transfer(0x00);
+  spi_transfer(0x00); // Disregard two bytes of temperature
+  spi_transfer(0x00);
+  for (int i = 6; i < 18; i++)
+    sample[i] = spi_transfer(0x00);
   mpu_end_read(SS);
-  uart_transmit(13); // Drop line
-  uart_transmit(10); // Drop line
+
+  // Write to memory
+  flash_start_write(addr);
+  for(int i = 0; i < 18; i++)
+    spi_transfer(sample[i]);
+  flash_end_rw();
 }
