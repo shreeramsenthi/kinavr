@@ -38,9 +38,7 @@ void collect_data() {
   flash_chip_erase ();
   flash_wait_for_ready();
 
-  uart_transmit('R');
-  while(~PORTA_IN & PIN6_bm);
-  uart_transmit('G');
+  while(!(~PORTA_IN & PIN6_bm));
 
   // Start sampling
   timer_init();
