@@ -32,13 +32,21 @@ void collect_data() {
   // Initialize communications and sensors
   uart_init(); // testing
   spi_init();
-  sensor_init(SS_SEN0);
 
-  // Setup memory
-  flash_chip_erase ();
-  flash_wait_for_ready();
+  // Update clock speed
+  CPU_CCP = CCP_IOREG_gc; // Unlock protected io regs
+  MCLK_CTRLB = 0; // set clock speed to 20MHz
+  USART0_BAUD = uart_baudrate * 6;// set baud rate
+  while(1)
+    uart_transmit('E');
 
-  while(!(~PORTA_IN & PIN6_bm));
+  //sensor_init(SS_SEN0);
+
+  //// Setup memory
+  //flash_chip_erase ();
+  //flash_wait_for_ready();
+
+  //while(!(~PORTA_IN & PIN6_bm));
 
   // Start sampling
   timer_init();
