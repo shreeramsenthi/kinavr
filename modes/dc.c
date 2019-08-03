@@ -15,6 +15,7 @@ ISR(TCA0_OVF_vect)
 {
   TCA0_SINGLE_INTFLAGS = TCA_SINGLE_OVF_bm;
 
+  uart_transmit('s');
   uart_print_byte_hex(cur_addr & 0xFF); // testing
   uart_transmit(13); // New line
 
@@ -24,12 +25,15 @@ ISR(TCA0_OVF_vect)
     cur_addr += 3;
 
   if(cur_addr > (max_addr - 0x12)) { // if next address is within 18 bytes of end
+	uart_transmit('r');
     TCA0_SINGLE_CTRLA = 0; // stop sampling
     TCA0_SINGLE_INTFLAGS = TCA_SINGLE_OVF_bm; // clear interrupt flags again
   }
 
-  if(TCA0_SINGLE_INTFLAGS & TCA_SINGLE_OVF_bm) // If ISR is called too frequently
+  if(TCA0_SINGLE_INTFLAGS & TCA_SINGLE_OVF_bm){ // If ISR is called too frequently
+    uart_transmit('q');
     TCA0_SINGLE_CTRLA = 0; // stop sampling
+  }
 }
 
 /*------------------------------------------*/
