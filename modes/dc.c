@@ -35,7 +35,7 @@ void collect_data() {
 
   // Update clock speed
   CPU_CCP = CCP_IOREG_gc; // Unlock protected io regs
-  MCLK_CTRLB = 0; // set clock speed to 20MHz
+  CLKCTRL_MCLKCTRLB = 0; // set clock speed to 20MHz
   USART0_BAUD = uart_baudrate * 6;// set baud rate
   while(1)
     uart_transmit('E');
