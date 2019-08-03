@@ -1,11 +1,12 @@
 volatile uint32_t cur_addr = 0;
+volatile _Bool ready = 1;
 
 /*------------------------------------------*/
 /*                 Timing                   */
 /*------------------------------------------*/
 
 void timer_init () {
-  TCA0_SINGLE_PER = 40000; // 16MHz clock / 500Hz sampling rate
+  TCA0_SINGLE_PER = 5000; // 16MHz clock / 500Hz sampling rate
   TCA0_SINGLE_CTRLA = TCA_SINGLE_ENABLE_bm;
   TCA0_SINGLE_INTCTRL |= TCA_SINGLE_OVF_bm; // Enable timer interrupts on overflow on timer A
   sei();
@@ -13,22 +14,26 @@ void timer_init () {
 
 ISR(TCA0_OVF_vect)
 {
-  sensor_sample(SS_SEN0, cur_addr);
-  cur_addr += 18;
-  if((cur_addr % 0xFF) % 0xFC == 0) // skip last 4 bytes of each page
-    cur_addr += 3;
+  if(!ready) {
+    cli();
+    uart_print_byte_hex(cur_addr >> 16);
+    uart_print_byte_hex((cur_addr >> 8) & 0xFF);
+    uart_print_byte_hex(cur_addr & 0xFF);
+  }
+  else {
+    ready = 0;
+    TCA0_SINGLE_INTFLAGS = TCA_SINGLE_OVF_bm;
 
-  if(cur_addr > (max_addr - 0x12)) // if next address is within 18 bytes of end
-    cli(); // clear global interrupts (stop sampling)
+    sensor_sample(SS_SEN0, cur_addr);
+    cur_addr += 18;
+    if((cur_addr % 0xFF) % 0xFC == 0) // skip last 4 bytes of each page
+      cur_addr += 3;
 
-  //testing
-  uint16_t end_time = TCA0_SINGLE_CNT;
-  uart_print_byte_hex(end_time >> 8);
-  uart_print_byte_hex(end_time & 0xFF);
-  uart_transmit(10);
-  uart_transmit(13);
+    if(cur_addr > (max_addr - 0x12)) // if next address is within 18 bytes of end
+      cli(); // clear global interrupts (stop sampling)
 
-  TCA0_SINGLE_INTFLAGS = TCA_SINGLE_OVF_bm;
+    ready = 1;
+  }
 }
 
 /*------------------------------------------*/
