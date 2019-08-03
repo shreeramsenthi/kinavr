@@ -25,8 +25,11 @@ ISR(TCA0_OVF_vect)
       cli(); // clear global interrupts (stop sampling)
 
 	if(TCA0_SINGLE_INTFLAGS & TCA_SINGLE_OVF_bm) {
+		TCA0_SINGLE_CTRLA = 0;
 		uart_transmit('q');
-		cli();
+		uart_print_byte_hex((cur_addr >> 16) & 0xFF);
+		uart_print_byte_hex((cur_addr >> 8) & 0xFF);
+		uart_print_byte_hex((cur_addr >> 0) & 0xFF);
 	}
 }
 
