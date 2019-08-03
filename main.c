@@ -1,4 +1,4 @@
-#define F_CPU 3333333UL
+#define F_CPU 16000000UL
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
@@ -14,6 +14,10 @@ const int DC_BTN = PIN5_bm; // PORT A
 const int DO_BTN = PIN6_bm; // PORT A
 
 int main () {
+  // Setup master clock speed
+  CPU_CCP = CCP_IOREG_gc; // Unlock protected io regs
+  CLKCTRL_MCLKCTRLB = 0; // set clock speed to 16MHz
+
   // Mode button setup
   PORTA_DIRCLR = DO_BTN | DC_BTN;
   PORTA_PIN5CTRL = PORT_PULLUPEN_bm;

@@ -25,7 +25,7 @@ void spi_init() {
 
   SPI0_CTRLB = 3; // SPI MODE 3
   SPI0_CTRLA = SPI_MASTER_bm |
-               SPI_CLK2X_bm |
+               SPI_PRESC_DIV16_gc |
                SPI_ENABLE_bm; // Enable SPI in fast master mode
 }
 
