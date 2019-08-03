@@ -6,7 +6,7 @@ volatile _Bool ready = 1;
 /*------------------------------------------*/
 
 void timer_init () {
-  TCA0_SINGLE_PER = 5000; // 16MHz clock / 500Hz sampling rate
+  TCA0_SINGLE_PER = 100; // 16MHz clock / 500Hz sampling rate
   TCA0_SINGLE_CTRLA = TCA_SINGLE_ENABLE_bm;
   TCA0_SINGLE_INTCTRL |= TCA_SINGLE_OVF_bm; // Enable timer interrupts on overflow on timer A
   sei();
@@ -14,14 +14,6 @@ void timer_init () {
 
 ISR(TCA0_OVF_vect)
 {
-  if(!ready) {
-    cli();
-    uart_print_byte_hex(cur_addr >> 16);
-    uart_print_byte_hex((cur_addr >> 8) & 0xFF);
-    uart_print_byte_hex(cur_addr & 0xFF);
-  }
-  else {
-    ready = 0;
     TCA0_SINGLE_INTFLAGS = TCA_SINGLE_OVF_bm;
 
     sensor_sample(SS_SEN0, cur_addr);
@@ -32,8 +24,10 @@ ISR(TCA0_OVF_vect)
     if(cur_addr > (max_addr - 0x12)) // if next address is within 18 bytes of end
       cli(); // clear global interrupts (stop sampling)
 
-    ready = 1;
-  }
+	if(TCA0_SINGLE_INTFLAGS & TCA_SINGLE_OVF_bm) {
+		uart_transmit('q');
+		cli();
+	}
 }
 
 /*------------------------------------------*/
