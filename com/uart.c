@@ -1,5 +1,5 @@
 const uint8_t tx_pin = PIN2_bm; // Port B
-const uint16_t uart_baudrate = 1388; //Specific to 3.33MHz
+const uint16_t uart_baudrate = 1110; //Specific to 3.33MHz
 
 void uart_init (){
   // Set up Tx pin
