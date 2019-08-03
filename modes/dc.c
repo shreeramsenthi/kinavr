@@ -6,7 +6,7 @@ volatile uint32_t cur_addr = 0;
 
 void timer_init () {
   TCA0_SINGLE_PER = 32000; // 16MHz clock / 500Hz sampling rate
-  TCA0_SINGLE_CTRLA = TCA_SINGLE_ENABLE_bm;
+  TCA0_SINGLE_CTRLA = TCA_SINGLE_CLKSEL_DIV4_gc | TCA_SINGLE_ENABLE_bm;
   TCA0_SINGLE_INTCTRL |= TCA_SINGLE_OVF_bm; // Enable timer interrupts on overflow on timer A
   sei();
 }
