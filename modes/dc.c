@@ -7,8 +7,7 @@ volatile uint32_t cur_addr = 0;
 void timer_init () {
   TCA0_SINGLE_PER = 10000; // 16MHz clock / 1.6kHz sampling rate
   TCA0_SINGLE_CTRLA = TCA_SINGLE_ENABLE_bm;
-  TCA0_SINGLE_INTCTRL |= TCA_SINGLE_CLKSEL_DIV64_gc |
-    TCA_SINGLE_OVF_bm; // Enable timer interrupts on overflow on timer A
+  TCA0_SINGLE_INTCTRL |= TCA_SINGLE_CLKSEL_DIV256_gc | TCA_SINGLE_OVF_bm; // Enable timer interrupts on overflow on timer A
   sei();
 }
 
@@ -17,6 +16,7 @@ ISR(TCA0_OVF_vect)
   TCA0_SINGLE_INTFLAGS = TCA_SINGLE_OVF_bm;
 
   uart_print_byte_hex(cur_addr & 0xFF); // testing
+  uart_transmit(13); // New line
 
   sensor_sample(SS_SEN0, cur_addr);
   cur_addr += 18;
