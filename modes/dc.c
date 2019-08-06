@@ -26,9 +26,10 @@ ISR(TCA0_OVF_vect)
     if((cur_addr % 0x100) % 0x12 != 0 | cur_addr >= 0x7D36) {
       uart_transmit(10);
       uart_transmit(13);
-      uart_print_byte_hex((cur_addr << 16) & 0xFF);
-      uart_print_byte_hex((cur_addr <<  8) & 0xFF);
-      uart_print_byte_hex((cur_addr <<  0) & 0xFF);
+      uart_print_byte_hex((cur_addr >> 16) & 0xFF);
+      uart_print_byte_hex((cur_addr >>  8) & 0xFF);
+      uart_print_byte_hex((cur_addr >>  0) & 0xFF);
+      TCA0_SINGLE_CTRLA = 0; // stop sampling
     }
 }
 
