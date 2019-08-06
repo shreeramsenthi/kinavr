@@ -1,4 +1,4 @@
-const uint32_t max_addr = 0x3FFFFF; // Address to count up to. 3F for 32Mb
+const uint32_t max_addr = 0x3FFFFF; // Address to count up to 3F for 32Mb
 
 void output_data () {
   // Setup Communications
@@ -28,12 +28,12 @@ void output_data () {
     addr++; // increment address
 
     // Drop line every 18 bytes, or one sample
-    if((addr % 0xFF) % 18 == 0) {
+    if((addr % 0x100) % 18 == 0) {
       //uart_transmit(10); // for live view only
       uart_transmit(13);
     }
-    if((addr % 0xFF) % 0xFC == 0){ // skip last 4 bytes of each page
-      addr += 3;
+    if((addr % 0x100) % 0xFC == 0){ // skip last 4 bytes of each page
+      addr += 4;
       spi_transfer(0); // Ignore next 4 bytes
       spi_transfer(0); //
       spi_transfer(0); //

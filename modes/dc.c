@@ -17,8 +17,8 @@ ISR(TCA0_OVF_vect)
 
     sensor_sample(SS_SEN0, cur_addr);
     cur_addr += 18;
-    if((cur_addr % 0xFF) % 0xFC == 0) // skip last 4 bytes of each page
-      cur_addr += 3;
+    if((cur_addr % 0x100) % 0xFC == 0) // skip last 4 bytes of each page
+      cur_addr += 4;
 
     if(cur_addr > (max_addr - 0x12)) // if next address is within 18 bytes of end
       TCA0_SINGLE_CTRLA = 0; // stop sampling
