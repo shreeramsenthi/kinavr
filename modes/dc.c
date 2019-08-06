@@ -23,13 +23,13 @@ ISR(TCA0_OVF_vect)
     if(cur_addr > (max_addr - 0x12)) // if next address is within 18 bytes of end
       TCA0_SINGLE_CTRLA = 0; // stop sampling
 
-	if((TCA0_SINGLE_INTFLAGS & TCA_SINGLE_OVF_bm) | cur_addr >= 0x9E12) {
-		TCA0_SINGLE_CTRLA = 0;
-		uart_transmit('q');
-		uart_print_byte_hex((cur_addr >> 16) & 0xFF);
-		uart_print_byte_hex((cur_addr >> 8) & 0xFF);
-		uart_print_byte_hex((cur_addr >> 0) & 0xFF);
-	}
+    if((cur_addr % 0x100) % 0x12 != 0 | cur_addr >= 0x7D36) {
+      uart_transmit(10);
+      uart_transmit(13);
+      uart_print_byte_hex((cur_addr << 16) & 0xFF);
+      uart_print_byte_hex((cur_addr <<  8) & 0xFF);
+      uart_print_byte_hex((cur_addr <<  0) & 0xFF);
+    }
 }
 
 /*------------------------------------------*/

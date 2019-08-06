@@ -38,7 +38,6 @@ void output_data () {
       spi_transfer(0); //
       spi_transfer(0); //
       spi_transfer(0); //
-      uart_transmit(13);
     }
   }
 
