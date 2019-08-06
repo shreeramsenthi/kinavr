@@ -22,7 +22,6 @@ ISR(TCA0_OVF_vect)
 
     if(cur_addr > (max_addr - 0x12)) // if next address is within 18 bytes of end
       TCA0_SINGLE_CTRLA = 0; // stop sampling
-    }
 }
 
 /*------------------------------------------*/
