@@ -39,7 +39,7 @@ unsigned char spi_transfer (unsigned char data) {
 /*            Flash Functions               */
 /*------------------------------------------*/
 
-void flash_send_address (unsigned int addr) { //Sends 3 byte addresses over SPI
+void flash_send_address (uint32_t addr) { //Sends 3 byte addresses over SPI
   // Convert address to 3 bytes and send
   spi_transfer((addr >> 16) & 0xFF);
   spi_transfer((addr >> 8) & 0xFF);
@@ -61,7 +61,7 @@ void flash_write_enable () {
 }
 
 // For external use
-void flash_start_read (unsigned int addr) {
+void flash_start_read (uint32_t addr) {
   flash_wait_for_ready();
 
   PORTB_OUTCLR = SS_MEM;   // Set SS low
@@ -69,7 +69,7 @@ void flash_start_read (unsigned int addr) {
   flash_send_address(addr);
 }
 
-void flash_start_write (unsigned int addr){
+void flash_start_write (uint32_t addr){
   flash_wait_for_ready();
   flash_write_enable();
 
@@ -82,7 +82,7 @@ void flash_end_rw () {
   PORTB_OUTSET = SS_MEM;   // Set SS high
 }
 
-void flash_write_single (unsigned int addr, unsigned char data){
+void flash_write_single (uint32_t addr, unsigned char data){
   flash_wait_for_ready();
   flash_write_enable();
 
@@ -93,7 +93,7 @@ void flash_write_single (unsigned int addr, unsigned char data){
   PORTB_OUTSET = SS_MEM; // End Write
 }
 
-void flash_block_erase (unsigned int addr){
+void flash_block_erase (uint32_t addr){
   flash_wait_for_ready();
   flash_write_enable();
 
