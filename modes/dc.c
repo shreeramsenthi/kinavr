@@ -25,6 +25,10 @@ ISR(TCA0_OVF_vect)
 
     if(cur_addr == 0x1c90) // After one second at 400Hz
       TCA0_SINGLE_CTRLA = 0x00; // Equivalent to TCA0_SINGLE_DISABLE_bm;
+      blink(3); // Wait three seconds without recording
+      PORTA_OUTSET = LED_PIN; // Turn on LED for run time
+      TCA0_SINGLE_CTRLA = TCA_SINGLE_ENABLE_bm;
+    }
 }
 
 /*------------------------------------------*/
