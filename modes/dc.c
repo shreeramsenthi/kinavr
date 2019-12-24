@@ -5,7 +5,7 @@ volatile uint32_t cur_addr = 0;
 /*------------------------------------------*/
 
 void timer_init () {
-  TCA0_SINGLE_PER = 10000; // 16MHz clock / 1.6kHz sampling rate
+  TCA0_SINGLE_PER = 40000; // 16MHz clock / 400Hz sampling rate
   TCA0_SINGLE_CTRLA = TCA_SINGLE_ENABLE_bm;
   TCA0_SINGLE_INTCTRL |= TCA_SINGLE_OVF_bm; // Enable timer interrupts on overflow on timer A
   sei();
@@ -38,7 +38,10 @@ void collect_data() {
   flash_chip_erase ();
   flash_wait_for_ready();
 
-  while(!(~PORTA_IN & PIN6_bm));
+  blink(2); // Indicate erase is done
+  while(~PORTA_IN & SWITCH_PIN); // Wait until switch is toggled back high
+
+  blink(3); // count off to time callibration
 
   // Start sampling
   timer_init();

@@ -7,6 +7,15 @@
 const int LED_PIN = PIN4_bm;    // PORT A
 const int SWITCH_PIN = PIN7_bm; // PORT A
 
+void blink (int blinks) {
+  for(int i = 0; i < blinks; i ++){
+    PORTA_OUTSET = LED_PIN;
+    _delay_ms(500);
+    PORTA_OUTCLR = LED_PIN;
+    _delay_ms(500);
+  }
+}
+
 #include "com/uart.c"
 #include "com/spi.c"
 
@@ -31,13 +40,9 @@ int main () {
       PORTA_OUTCLR = LED_PIN;
       _delay_ms(5000);
       if(PORTA_IN & SWITCH_PIN) // if switched to high
-        PORTA_OUTSET = LED_PIN;
-        //collect_data();
+        collect_data();
       else
-        PORTA_OUTCLR = LED_PIN;
-        //output_data();
-    _delay_ms(5000);
-    PORTA_OUTSET = LED_PIN;
+        output_data();
     }
     _delay_ms(1000);
   }

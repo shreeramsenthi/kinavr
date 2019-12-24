@@ -1,6 +1,9 @@
 const uint32_t max_addr = 0x3FFFFF; // Address to count up to 3F for 32Mb
 
 void output_data () {
+  // Indicate mode
+  PORTA_OUTSET = LED_PIN;
+
   // Setup Communications
   uart_init();
   spi_init();
