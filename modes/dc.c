@@ -42,7 +42,7 @@ void collect_data() {
   flash_wait_for_ready();
 
   PORTA_OUTSET = LED_PIN; // Indicate erase is done
-  while(~PORTA_IN & SWITCH_PIN); // Wait until switch is toggled back high
+  while(PORTA_IN & SWITCH_PIN); // Wait until switch is toggled back low
 
   blink(4); // count off to time calibration
 
