@@ -29,6 +29,9 @@ ISR(TCA0_OVF_vect)
 /*------------------------------------------*/
 
 void collect_data() {
+  // Indicate mode
+  blink(2);
+  
   // Initialize communications and sensors
   spi_init();
 
@@ -38,10 +41,10 @@ void collect_data() {
   flash_chip_erase ();
   flash_wait_for_ready();
 
-  blink(2); // Indicate erase is done
+  PORTA_OUTSET = LED_PIN; // Indicate erase is done
   while(~PORTA_IN & SWITCH_PIN); // Wait until switch is toggled back high
 
-  blink(3); // count off to time callibration
+  blink(4); // count off to time calibration
 
   // Start sampling
   timer_init();
