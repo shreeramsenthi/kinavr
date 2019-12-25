@@ -10,6 +10,7 @@ void output_data () {
 
   // Set up counters
   uint32_t addr = 0; // We will iterate through addresses
+  uint8_t FF_counter = 0;
 
   // Start Read
   flash_start_read(addr);
@@ -25,8 +26,12 @@ void output_data () {
   //uart_transmit(10); // For live view only
   uart_transmit(13); // New line
 
-  while(addr <= max_addr) { // Repeat until all addresses output
+  while(addr <= max_addr && FF_counter < 18) { // Repeat until all addresses output or a line of FF's are found
     char data = spi_transfer(0); // Read in next byte
+	if(data == 0xFF)
+		FF_counter++;
+	else
+		FF_counter = 0;
     uart_print_byte_hex(data); //Print byte
     addr++; // increment address
 
@@ -43,7 +48,19 @@ void output_data () {
       spi_transfer(0); //
     }
   }
-
+  
   // End read command
   flash_end_rw();
+  
+  // Indicate end
+  PORTA_OUTCLR = LED_PIN;
+  uart_transmit(13); // New line
+  uart_transmit('D');
+  uart_transmit('O');
+  uart_transmit('N');
+  uart_transmit('E');
+  uart_transmit(13); // New line
+  
+  // Don't return to main()
+  while(1);
 }
