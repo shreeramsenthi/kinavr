@@ -27,10 +27,10 @@ int main () {
   PORTA_OUTSET = LED_PIN;
 
   while(1){
-    if (PORTA_IN & SWITCH_PIN) { // check if switch is high
+    if (~PORTA_IN & SWITCH_PIN) { // check if switch is low
       PORTA_OUTCLR = LED_PIN;
       _delay_ms(5000);
-      if(~PORTA_IN & SWITCH_PIN) // if switched to low
+      if(PORTA_IN & SWITCH_PIN) // if switched to high
         PORTA_OUTSET = LED_PIN;
         //collect_data();
       else
