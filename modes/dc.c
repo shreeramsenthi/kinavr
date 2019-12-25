@@ -23,8 +23,8 @@ ISR(TCA0_OVF_vect)
     if(cur_addr > (max_addr - 0x12)) // if next address is within 18 bytes of end
       TCA0_SINGLE_CTRLA = 0; // stop sampling
 
-    if(cur_addr == 0x1ca2) // After one second at 400Hz
-      cli();
+    if(cur_addr == 0x1c90) // After one second at 400Hz
+      TCA0_SINGLE_CTRLA = 0x00; // Equivalent to TCA0_SINGLE_DISABLE_bm;
 }
 
 /*------------------------------------------*/
