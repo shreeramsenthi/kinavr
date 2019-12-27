@@ -5,8 +5,8 @@ volatile uint32_t cur_addr = 0;
 /*------------------------------------------*/
 
 void timer_init () {
-  TCA0_SINGLE_PER = 40000; // 16MHz clock / 400Hz sampling rate
-  TCA0_SINGLE_CTRLA = TCA_SINGLE_ENABLE_bm;
+  TCA0_SINGLE_PER = 40000; // 16MHz clock / DIV2 prescaler / 200Hz sampling rate
+  TCA0_SINGLE_CTRLA = TCA_SINGLE_ENABLE_bm | TCA_SINGLE_CLKSEL_DIV2_gc;
   TCA0_SINGLE_INTCTRL |= TCA_SINGLE_OVF_bm; // Enable timer interrupts on overflow on timer A
   sei();
 }
@@ -17,6 +17,9 @@ ISR(TCA0_OVF_vect)
 
     sensor_sample(SS_SEN0, cur_addr);
     cur_addr += 18;
+    sensor_sample(SS_SEN1, cur_addr);
+    cur_addr += 18;
+
     if((cur_addr % 0x100) % 0xFC == 0) // skip last 4 bytes of each page
       cur_addr += 4;
 
@@ -25,11 +28,11 @@ ISR(TCA0_OVF_vect)
       PORTA_OUTCLR = LED_PIN;
     }
 
-    if(cur_addr == 0x1c90) { // After one second at 400Hz
+    if(cur_addr == 0x1c90) { // After one second at 200Hz * 2 sensors
       TCA0_SINGLE_CTRLA = 0x00; // Equivalent to TCA0_SINGLE_DISABLE_bm;
-      blink(3); // Wait three seconds without recording
+      while(~PORTA_IN & SWITCH_PIN); // Wait until switch is toggled back high
       PORTA_OUTSET = LED_PIN; // Turn on LED for run time
-      TCA0_SINGLE_CTRLA = TCA_SINGLE_ENABLE_bm;
+      TCA0_SINGLE_CTRLA = TCA_SINGLE_ENABLE_bm | TCA_SINGLE_CLKSEL_DIV2_gc;
     }
 }
 
@@ -45,6 +48,7 @@ void collect_data() {
   spi_init();
 
   sensor_init(SS_SEN0);
+  sensor_init(SS_SEN1);
 
   // Setup memory
   flash_chip_erase ();
