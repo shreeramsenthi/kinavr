@@ -28,10 +28,10 @@ void output_data () {
 
   while(addr <= max_addr && FF_counter < 18) { // Repeat until all addresses output or a line of FF's are found
     char data = spi_transfer(0); // Read in next byte
-	if(data == 0xFF)
-		FF_counter++;
-	else
-		FF_counter = 0;
+  if(data == 0xFF)
+    FF_counter++;
+  else
+    FF_counter = 0;
     uart_print_byte_hex(data); //Print byte
     addr++; // increment address
 
@@ -48,10 +48,10 @@ void output_data () {
       spi_transfer(0); //
     }
   }
-  
+
   // End read command
   flash_end_rw();
-  
+
   // Indicate end
   PORTA_OUTCLR = LED_PIN;
   uart_transmit(13); // New line
@@ -60,7 +60,7 @@ void output_data () {
   uart_transmit('N');
   uart_transmit('E');
   uart_transmit(13); // New line
-  
+
   // Don't return to main()
   while(1);
 }
