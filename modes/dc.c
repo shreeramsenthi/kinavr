@@ -20,17 +20,14 @@ ISR(TCA0_OVF_vect)
     if((cur_addr % 0x100) % 0xFC == 0) // skip last 4 bytes of each page
       cur_addr += 4;
 
-    if(cur_addr > (max_addr - 0x12)) { // if next address is within 18 bytes of end
-      TCA0_SINGLE_CTRLA = 0; // stop sampling
-      PORTA_OUTCLR = LED_PIN;
+    if(cur_addr > (max_addr - 0x12)) { // Reset mem if you run out of space
+      flash_chip_erase ();
+      flash_wait_for_ready();
+      cur_addr = 0;
     }
 
-    if(cur_addr == 0x1c90) { // After one second at 400Hz
-      TCA0_SINGLE_CTRLA = 0x00; // Equivalent to TCA0_SINGLE_DISABLE_bm;
-      blink(3); // Wait three seconds without recording
+// No need for calibration for battery test
       PORTA_OUTSET = LED_PIN; // Turn on LED for run time
-      TCA0_SINGLE_CTRLA = TCA_SINGLE_ENABLE_bm;
-    }
 }
 
 /*------------------------------------------*/
