@@ -159,8 +159,8 @@ void sensor_init (uint8_t SS) {
   mpu_write_register(SS, MPU9250_PWR_MGMT_2, 0x00); // Ensure Accel + Gyro are enabled
 
   // Set Accel/Gyro resolution and LP Filter
-  mpu_write_register(SS, MPU9250_ACCEL_CONFIG, 0x00); // 2G scale
-  mpu_write_register(SS, MPU9250_GYRO_CONFIG, 0x00); // Enable LP filter and 250 scale (may be disabling LP filter, unclear)
+  mpu_write_register(SS, MPU9250_ACCEL_CONFIG, 0x10); // 8G scale
+  mpu_write_register(SS, MPU9250_GYRO_CONFIG, 0x10); // Enable LP filter and 1000 scale (may be disabling LP filter, unclear)
 
   // Set up I2C Master
   mpu_write_register(SS, MPU9250_INT_PIN_CFG, 0x20); // Disable bypass and latch INT pin
